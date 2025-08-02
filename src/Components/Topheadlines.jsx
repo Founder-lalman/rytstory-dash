@@ -34,9 +34,9 @@ const Topheadlines = () => {
     return (
         <>
             <div className='max-w-full mx-auto'>
-                <div className='max-w-[1440px] mx-auto px-25 flex flex-col-2 mt-8 gap-5 '>
+                <div className='w-[1440px] px-25 flex flex-col-2 mt-8 gap-8  justify-between '>
                     <div className=''>
-                        <div className='w-[708px] h-[20px] max-w-full  mx-auto flex justify-between  items-center'>
+                        <div className='w-[708px] h-[20px] flex justify-between  items-center'>
                             <h1 className='text-sm font-bold text-gray-500 '>Top Headlines</h1>
                             <div className='flex gap-0.5  items-center'>
                                 <h1 className='text-sm font-bold text-gray-500'>Popularity</h1>
