@@ -34,16 +34,16 @@ const Topheadlines = () => {
     return (
         <>
             <div className='max-w-full mx-auto'>
-                <div className='max-w-full px-25 flex flex-col-2 mt-8  justify-between '>
+                <div className='max-w-full px-25 grid grid-cols-[70%_auto] mt-8 gap-4  justify-between '>
                     <div>
-                        <div className='w-[708px] h-[20px] flex justify-between  items-center'>
+                        <div className='max-w-full h-[20px] flex justify-between  items-center'>
                             <h1 className='text-sm font-bold text-gray-500 '>Top Headlines</h1>
                             <div className='flex gap-0.5  items-center'>
                                 <h1 className='text-sm font-bold text-gray-500'>Popularity</h1>
                                 <FaSortAmountUpAlt className="text-[#7E3AF2] w-5 h-5" />
                             </div>
                         </div>
-                        <div className='w-[708px] h-[120px] p-5 mt-8 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200 '>
+                        <div className='max-w-full h-[120px] p-5 mt-8 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200 '>
                             <div className='w-[454px]  h-[80px] flex items-center gap-8'>
                                 <div><img src={img} alt="not found" className='w-20 h-20 rounded-xl' /></div>
                                 <div>
@@ -56,7 +56,7 @@ const Topheadlines = () => {
                                 <h1 className='text-2xl font-bold text-[#7E3AF2]'>2.4</h1>
                             </div>
                         </div>
-                        <div className='w-[708px] h-[120px] p-5 mt-4 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200 '>
+                        <div className='max-w-full h-[120px] p-5 mt-4 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200 '>
                             <div className='w-[454px]  h-[80px] flex items-center gap-8'>
                                 <div><img src={img5} alt="not found" className='w-20 h-20 rounded-xl' /></div>
                                 <div>
@@ -69,7 +69,7 @@ const Topheadlines = () => {
                                 <h1 className='text-2xl font-bold text-[#7E3AF2]'>4.4</h1>
                             </div>
                         </div>
-                        <div className='w-[708px] h-[120px] p-5 mt-4 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200 '>
+                        <div className='max-w-full h-[120px] p-5 mt-4 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200 '>
                             <div className='w-[454px]  h-[80px] flex items-center gap-8'>
                                 <div><img src={img5} alt="not found" className='w-20 h-20 rounded-xl' /></div>
                                 <div>
@@ -82,7 +82,7 @@ const Topheadlines = () => {
                                 <h1 className='text-2xl font-bold text-[#7E3AF2]'>4.4</h1>
                             </div>
                         </div>
-                        <div className='w-[708px] h-[120px] p-5 mt-4 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200 '>
+                        <div className='max-w-full h-[120px] p-5 mt-4 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200 '>
                             <div className='w-[454px]  h-[80px] flex items-center gap-8'>
                                 <div><img src={img5} alt="not found" className='w-20 h-20 rounded-xl' /></div>
                                 <div className='p-5'>
@@ -95,7 +95,7 @@ const Topheadlines = () => {
                                 <h1 className='text-2xl font-bold text-[#7E3AF2]'>4.4</h1>
                             </div>
                         </div>
-                        <div className='w-[708px] h-[120px] p-5 mt-4 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200 '>
+                        <div className='max-w-full h-[120px] p-5 mt-4 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200 '>
                             <div className='w-[454px]  h-[80px] flex items-center gap-8'>
                                 <div><img src={img6} alt="not found" className='w-20 h-20 rounded-xl' /></div>
                                 <div>

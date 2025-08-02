@@ -47,8 +47,8 @@ const WordCloud = ({ words }) => {
             ]);
 
             svg
-                .attr('width', width)
-                .attr('height', height)
+                .attr('viewBox', `0 0 ${width} ${height}`)
+                .attr('preserveAspectRatio', 'xMidYMid meet')
                 .append('g')
                 .attr('transform', `translate(${width / 2}, ${height / 2})`)
                 .selectAll('text')
@@ -69,10 +69,13 @@ const WordCloud = ({ words }) => {
     }, [words, selectedWord]);
 
     return (
-        <div style={{ textAlign: 'center' }}>
-            <svg ref={svgRef}></svg>
+        <div className="text-center w-full h-[400px] overflow-hidden">
+            <svg ref={svgRef} className="w-full h-full"></svg>
             {selectedWord && (
-                <button onClick={() => setSelectedWord(null)} style={{ marginTop: 10 }}>
+                <button
+                    onClick={() => setSelectedWord(null)}
+                    className="mt-2 px-4 py-1 bg-purple-600 text-white rounded hover:bg-purple-700"
+                >
                     Show All
                 </button>
             )}
