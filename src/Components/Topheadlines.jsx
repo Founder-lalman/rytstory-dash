@@ -34,8 +34,8 @@ const Topheadlines = () => {
     return (
         <>
             <div className='max-w-full mx-auto'>
-                <div className='w-[1440px] px-25 flex flex-col-2 mt-8 gap-8  justify-between '>
-                    <div className=''>
+                <div className='max-w-full px-25 flex flex-col-2 mt-8  justify-between '>
+                    <div>
                         <div className='w-[708px] h-[20px] flex justify-between  items-center'>
                             <h1 className='text-sm font-bold text-gray-500 '>Top Headlines</h1>
                             <div className='flex gap-0.5  items-center'>
