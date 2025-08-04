@@ -7,7 +7,7 @@ import logo from '../assets/rytlogo.png'
 
 
 const Dashbord = () => {
-
+ 
   const [ismobile, setismobile] = useState(false)
 
   useEffect(() => {
@@ -46,7 +46,6 @@ const Dashbord = () => {
       <Navbar />
       <Filter />
       <Topheadlines />
-
     </>
   )
 }

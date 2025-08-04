@@ -88,7 +88,7 @@ const Filter = () => {
                                 isMulti
                                 value={country}
                                 onChange={setCountry}
-                                placeholder="Format"                           
+                                placeholder="Country"                           
                                 styles={customStyles}
                             />
                         </div>
