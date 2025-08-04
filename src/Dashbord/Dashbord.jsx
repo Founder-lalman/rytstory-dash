@@ -32,14 +32,12 @@ const Dashbord = () => {
   if (ismobile) {
     return (
       <>
-        <div className='max-w-full h-screen grid justify-center items-center '>
-          <div className='max-w-[95%] mx-auto p-4 bg-whitesmoke shadow-sm'>
-             <div className='max-w-[90%] mx-auto justify-center items-center'>
-            <img src={logo} alt='logo'/>
-          </div>
-            <h1 className='text-red-500 text-xl mt-4 text-center font-semibold'>This website is not available on mobile.Please use a desktop device.</h1>
-          </div>
-        </div>
+       <div className="w-screen h-screen overflow-hidden bg-white flex flex-col justify-center items-center px-4">
+      <img src={logo} alt="logo" className="w-32 h-auto mb-6" />
+      <h1 className="text-red-500 text-xl text-center font-semibold">
+        This website is not available on mobile.<br />Please use a desktop device.
+      </h1>
+    </div>
       </>
     )
   }
