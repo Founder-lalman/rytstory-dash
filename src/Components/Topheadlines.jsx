@@ -34,12 +34,12 @@ const Topheadlines = () => {
     return (
         <>
             <div className='max-w-full mx-auto'>
-                <div className='max-w-full px-25 grid grid-cols-[70%_auto] mt-8 gap-4  justify-between '>
+                <div className='max-w-full px-25 grid grid-cols-[55%_auto] mt-8 gap-4  justify-between '>
                     <div>
                         <div className='max-w-full h-[20px] flex justify-between  items-center'>
-                            <h1 className='text-sm font-bold text-gray-500 '>Top Headlines</h1>
+                            <h1 className='text-md font-bold text-gray-500 '>Top Headlines</h1>
                             <div className='flex gap-0.5  items-center'>
-                                <h1 className='text-sm font-bold text-gray-500'>Popularity</h1>
+                                <h1 className='text-md font-bold text-gray-500'>Popularity</h1>
                                 <FaSortAmountUpAlt className="text-[#7E3AF2] w-5 h-5" />
                             </div>
                         </div>
@@ -110,7 +110,7 @@ const Topheadlines = () => {
                         </div>
                     </div>
                     <div>
-                        <div><h1 className='h-[20px] text-gray-500 text-xl text-semibild  '>Top Trends</h1></div>
+                        <div><h1 className='h-[20px] text-md font-bold text-gray-500  '>Top Trends</h1></div>
                         <div className='rounded-md mt-8  p-4 shadow-inner '>
                             <WordCloud words={wordData} />
                         </div>

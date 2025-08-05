@@ -69,7 +69,7 @@ const WordCloud = ({ words }) => {
     }, [words, selectedWord]);
 
     return (
-        <div className="text-center w-full h-[400px] overflow-hidden">
+        <div className="text-center w-full h-[550px] overflow-hidden">
             <svg ref={svgRef} className="w-full h-full"></svg>
             {selectedWord && (
                 <button
