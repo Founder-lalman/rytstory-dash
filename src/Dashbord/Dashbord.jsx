@@ -7,37 +7,32 @@ import logo from '../assets/rytlogo.png'
 
 
 const Dashbord = () => {
- 
+
   const [ismobile, setismobile] = useState(false)
 
-  useEffect(() => {
-    const checkMobile = () => {
-      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-      if (/android|iphone|ipad|mobile/i.test(userAgent) || window.innerWidth < 768) {
-        setismobile(true);
-      } else {
-        setismobile(false);
-      }
-    };
+ useEffect(() => {
+  const checkMobile = () => {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    if (/android|iphone|ipad|ipod/i.test(userAgent)) {
+      setismobile(true);
+    } else {
+      setismobile(false);
+    }
+  };
 
-    checkMobile();
+  checkMobile();
+}, []);
 
-    window.addEventListener('resize', checkMobile);
-
-    return () => {
-      window.removeEventListener('resize', checkMobile);
-    };
-  }, []);
 
   if (ismobile) {
     return (
       <>
-       <div className="w-screen h-screen overflow-hidden bg-white flex flex-col justify-center items-center px-4">
-      <img src={logo} alt="logo" className="w-32 h-auto mb-6" />
-      <h1 className="text-red-500 text-xl text-center font-semibold">
-        This website is not available on mobile.<br />Please use a desktop device.
-      </h1>
-    </div>
+        <div className="w-screen h-screen overflow-hidden bg-white flex flex-col justify-center items-center px-4">
+          <img src={logo} alt="logo" className="w-32 h-auto mb-6" />
+          <h1 className="text-red-500 text-xl text-center font-semibold">
+            This website is not available on mobile.<br />Please use a desktop device.
+          </h1>
+        </div>
       </>
     )
   }
