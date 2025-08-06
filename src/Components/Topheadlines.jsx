@@ -12,6 +12,12 @@ const wordData = [
     { text: 'Apple Inc.', value: 30 },
     { text: 'Amazon Web Services', value: 27 },
     { text: 'Google', value: 26 },
+    { text: 'Donald Trump', value: 50 },
+    { text: 'Supreme Court of India', value: 40 },
+    { text: 'Narendra Modi', value: 35 },
+    { text: 'Apple Inc.', value: 30 },
+    { text: 'Amazon Web Services', value: 27 },
+    { text: 'Google', value: 26 },
     { text: 'Microsoft', value: 25 },
     { text: 'Infosys', value: 24 },
     { text: 'NASA', value: 23 },
@@ -34,7 +40,7 @@ const Topheadlines = () => {
     return (
         <>
             <div className='max-w-full mx-auto'>
-                <div className='max-w-full px-25 grid grid-cols-[55%_auto] mt-8 gap-4  justify-between '>
+                <div className='max-w-full px-25 grid grid-cols-[55%_auto] mt-8 gap-6  justify-between '>
                     <div>
                         <div className='max-w-full h-[20px] flex justify-between  items-center'>
                             <h1 className='text-md font-bold text-gray-500 '>Top Headlines</h1>
@@ -109,9 +115,9 @@ const Topheadlines = () => {
                             </div>
                         </div>
                     </div>
-                    <div>
+                    <div className='max-w-full  '>
                         <div><h1 className='h-[20px] text-md font-bold text-gray-500  '>Top Trends</h1></div>
-                        <div className='rounded-md mt-8  p-4 shadow-inner '>
+                        <div className='max-w-full mx-auto rounded-md mt-8  shadow-inner '>
                             <WordCloud words={wordData} />
                         </div>
                     </div>

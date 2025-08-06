@@ -7,8 +7,8 @@ const WordCloud = ({ words }) => {
     const [selectedWord, setSelectedWord] = useState(null);
 
     useEffect(() => {
-        const width = 500;
-        const height = 500;
+        const width = 900;
+        const height = 900;
 
         const displayWords = selectedWord
             ? words.filter(word => word.text === selectedWord)
