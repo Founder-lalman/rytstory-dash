@@ -40,7 +40,7 @@ const Topheadlines = () => {
     return (
         <>
             <div className='max-w-full mx-auto'>
-                <div className='max-w-full px-25 grid grid-cols-[55%_auto] mt-8 gap-6  justify-between '>
+                <div className='max-w-full px-25 grid grid-cols-[55%_auto] mt-8 gap-6 '>
                     <div>
                         <div className='max-w-full h-[20px] flex justify-between  items-center'>
                             <h1 className='text-md font-bold text-gray-500 '>Top Headlines</h1>
