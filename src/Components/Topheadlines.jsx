@@ -165,7 +165,7 @@ const Topheadlines = () => {
     useEffect(() => {
         const fetchheadline = async () => {
             try {
-                const response = await fetch('http://43.205.65.179:8000/elastic_data/discover_feed_data', {
+                const response = await fetch('https://43.205.65.179:8000/elastic_data/discover_feed_data', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

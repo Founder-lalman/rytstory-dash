@@ -37,62 +37,62 @@ const Filter = () => {
 
 
     const fetchdata = async () => {
-            try {
-                const response = await fetch('http://43.205.65.179:8000/elastic_data/discover_feed_data', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Basic bmltYTppbWFnZQ=='
-                    },
-                    body: JSON.stringify({
-                        aggs: {
-                            "0": {
-                                terms: {
-                                    field: "category.keyword",
-                                    order: { _count: "desc" },
-                                    size: 100
-                                }
-                            }
-                        },
-                        size: 100,
-                        fields: [{ field: "dateCrawled", format: "date_time" }],
-                        script_fields: {},
-                        stored_fields: ["*"],
-                        runtime_mappings: {
-                            clickhere_url_link: {
-                                type: "keyword",
-                                script: {
-                                    source: "if (!doc['url.keyword'].empty) { emit(doc['url.keyword'].value); }"
-                                }
-                            }
-                        },
-                        _source: { excludes: [] },
-                        query: {
-                            bool: {
-                                must: [],
-                                filter: [
-                                    {
-                                        range: {
-                                            dateCrawled: {
-                                                format: "strict_date_optional_time",
-                                                gte: "2025-07-28T18:30:00.000Z",
-                                                lte: "2025-08-05T16:45:29.469Z"
-                                            }
-                                        }
-                                    }
-                                ],
-                                should: [],
-                                must_not: []
+        try {
+            const response = await fetch('https://43.205.65.179:8000/elastic_data/discover_feed_data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Basic bmltYTppbWFnZQ=='
+                },
+                body: JSON.stringify({
+                    aggs: {
+                        "0": {
+                            terms: {
+                                field: "category.keyword",
+                                order: { _count: "desc" },
+                                size: 100
                             }
                         }
-                    })
-                });
+                    },
+                    size: 100,
+                    fields: [{ field: "dateCrawled", format: "date_time" }],
+                    script_fields: {},
+                    stored_fields: ["*"],
+                    runtime_mappings: {
+                        clickhere_url_link: {
+                            type: "keyword",
+                            script: {
+                                source: "if (!doc['url.keyword'].empty) { emit(doc['url.keyword'].value); }"
+                            }
+                        }
+                    },
+                    _source: { excludes: [] },
+                    query: {
+                        bool: {
+                            must: [],
+                            filter: [
+                                {
+                                    range: {
+                                        dateCrawled: {
+                                            format: "strict_date_optional_time",
+                                            gte: "2025-07-28T18:30:00.000Z",
+                                            lte: "2025-08-05T16:45:29.469Z"
+                                        }
+                                    }
+                                }
+                            ],
+                            should: [],
+                            must_not: []
+                        }
+                    }
+                })
+            });
 
-             
-                const data = await response.json();
-                // console.log(">>>>>>", data)
 
-                 if (data.aggregations && data.aggregations["0"] && data.aggregations["0"].buckets) {
+            const data = await response.json();
+            // console.log(">>>>>>", data)
+
+            if (data.aggregations && data.aggregations["0"] && data.aggregations["0"].buckets) {
                 // If you're getting categories from aggregations
                 const categoryBuckets = data.aggregations["0"].buckets;
                 const categories = categoryBuckets.map(bucket => ({
@@ -118,7 +118,7 @@ const Filter = () => {
                     if (src.location) countrySet.add(src.location);
                 });
 
-                
+
 
                 setPublisherOptions([...publisherSet].map(item => ({ value: item, label: item })));
                 setCategoryOptions([...categorySet].map(item => ({ value: item, label: item })));
