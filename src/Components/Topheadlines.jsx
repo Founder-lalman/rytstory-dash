@@ -1,45 +1,208 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import img from '../assets/satyam.jpg'
-import img5 from '../assets/image5.png'
 import { FaSortAmountUpAlt } from "react-icons/fa";
-import img6 from '../assets/image6.png'
-import WordCloud from './WordCloud';
 
-const wordData = [
-    { text: 'Donald Trump', value: 50 },
-    { text: 'Supreme Court of India', value: 40 },
-    { text: 'Narendra Modi', value: 35 },
-    { text: 'Apple Inc.', value: 30 },
-    { text: 'Amazon Web Services', value: 27 },
-    { text: 'Google', value: 26 },
-    { text: 'Donald Trump', value: 50 },
-    { text: 'Supreme Court of India', value: 40 },
-    { text: 'Narendra Modi', value: 35 },
-    { text: 'Apple Inc.', value: 30 },
-    { text: 'Amazon Web Services', value: 27 },
-    { text: 'Google', value: 26 },
-    { text: 'Microsoft', value: 25 },
-    { text: 'Infosys', value: 24 },
-    { text: 'NASA', value: 23 },
-    { text: 'Flipkart', value: 22 },
-    { text: 'Tata Consultancy Services', value: 21 },
-    { text: 'Reliance Industries', value: 20 },
-    { text: 'Air India', value: 18 },
-    { text: 'OpenAI', value: 17 },
-    { text: 'Salil Parekh', value: 16 },
-    { text: 'Amazon (company)', value: 15 },
-    { text: 'National Stock Exchange of India', value: 14 },
-    { text: 'Samsung', value: 13 },
-    { text: 'Ajay Devgn', value: 12 },
-    { text: 'Aamir Khan', value: 11 },
-    // Add more to reach 25+
-];
+import Worddata from './Worddata';
+
+const body = {
+    "aggs": {
+        "0": {
+            "terms": {
+                "field": "url.keyword",
+                "order": {
+                    "_key": "asc"
+                },
+                "size": 3000
+            },
+            "aggs": {
+                "1": {
+                    "terms": {
+                        "field": "headline.keyword",
+                        "order": {
+                            "1-orderAgg": "desc"
+                        },
+                        "size": 1000
+                    },
+                    "aggs": {
+                        "2": {
+                            "cardinality": {
+                                "field": "email.keyword"
+                            }
+                        },
+                        "1-orderAgg": {
+                            "cardinality": {
+                                "field": "email.keyword"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "size": 0,
+    "fields": [
+        {
+            "field": "dateCrawled",
+            "format": "date_time"
+        }
+    ],
+    "script_fields": {},
+    "stored_fields": [
+        "*"
+    ],
+    "runtime_mappings": {
+        "clickhere_url_link": {
+            "type": "keyword",
+            "script": {
+                "source": "if (!doc['url.keyword'].empty) {\n  emit(doc['url.keyword'].value);\n}"
+            }
+        }
+    },
+    "_source": {
+        "excludes": []
+    },
+    "query": {
+        "bool": {
+            "must": [],
+            "filter": [
+                {
+                    "range": {
+                        "dateCrawled": {
+                            "gte": "now/d",
+                            "lte": "now"
+                        }
+                    }
+                }
+            ],
+            "should": [],
+            "must_not": []
+        }
+    }
+}
+
+// const body= 
+// {
+//   "aggs": {
+//     "0": {
+//       "terms": {
+//         "field": "url.keyword",
+//         "order": {
+//           "_key": "asc"
+//         },
+//         "size": 3000
+//       },
+//       "aggs": {
+//         "1": {
+//           "terms": {
+//             "field": "headline.keyword",
+//             "order": {
+//               "1-orderAgg": "desc"
+//             },
+//             "size": 1000
+//           },
+//           "aggs": {
+//             "2": {
+//               "cardinality": {
+//                 "field": "email.keyword"
+//               }
+//             },
+//             "1-orderAgg": {
+//               "cardinality": {
+//                 "field": "email.keyword"
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   },
+//   "size": 0,
+//   "fields": [
+//     {
+//       "field": "dateCrawled",
+//       "format": "date_time"
+//     }
+//   ],
+//   "script_fields": {},
+//   "stored_fields": [
+//     "*"
+//   ],
+//   "runtime_mappings": {
+//     "clickhere_url_link": {
+//       "type": "keyword",
+//       "script": {
+//         "source":"if (!doc['url.keyword'].empty) {\n  emit(doc['url.keyword'].value);\n}"
+//       }
+//     }
+//   },
+//   "_source": {
+//     "excludes": []
+//   },
+//   "query": {
+//     "bool": {
+//       "must": [],
+//       "filter": [
+//         {
+//           "range": {
+//            "dateCrawled": {
+//                 "gte": "now/d",
+//                 "lte": "now"
+//             }
+//           }
+//         }
+//       ],
+//       "should": [], 
+//       "must_not": []
+//     }
+//   }
+// } 
+
 
 
 const Topheadlines = () => {
+    const [Headlines, setHeadlines] = useState([])
+
+    useEffect(() => {
+        const fetchheadline = async () => {
+            try {
+                const response = await fetch('http://43.205.65.179:8000/elastic_data/discover_feed_data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Basic bmltYTppbWFnZQ=='
+                    },
+                    body: JSON.stringify(body)
+                })
+                const data = await response.json()
+                const aggBuckets = data?.aggregations?.["0"]?.buckets || [];
+                console.log("aggBuckets", aggBuckets)
+                const parsedHeadlines = aggBuckets.map(urlBucket => {
+                    const headlineBucket = urlBucket["1"]?.buckets?.[0];
+                    return {
+                        url: urlBucket.key,
+                        headline: headlineBucket?.key || "Untitled",
+                        score: headlineBucket?.["1-orderAgg"]?.value || 0,
+                        docCount: urlBucket.doc_count,
+
+
+                    };
+                });
+                console.log("parseheadline", parsedHeadlines)
+                setHeadlines(parsedHeadlines);
+
+
+            }
+            catch (error) {
+                console.log('error', error)
+            }
+        };
+        fetchheadline();
+
+    }, [])
     return (
         <>
             <div className='max-w-full mx-auto'>
+
                 <div className='max-w-full px-25 grid grid-cols-[55%_auto] mt-8 gap-6 '>
                     <div>
                         <div className='max-w-full h-[20px] flex justify-between  items-center'>
@@ -49,81 +212,33 @@ const Topheadlines = () => {
                                 <FaSortAmountUpAlt className="text-[#7E3AF2] w-5 h-5" />
                             </div>
                         </div>
-                        <div className='max-w-full h-[120px] p-5 mt-8 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200 '>
-                            <div className='w-[454px]  h-[80px] flex items-center gap-8'>
-                                <div><img src={img} alt="not found" className='w-20 h-20 rounded-xl' /></div>
-                                <div>
-                                    <h1 className='text-md text-gray-500'>Entertainment Desk</h1>
-                                    <a className='text-xl font-semibold ' href='#####'>Sanjay Dutt men 62/ year old</a>
-                                    <p className='text-md text-gray-500'>11:02 am | 1 hour ago</p>
+                        <div className='h-[600px] scrollbar scrollbar-thumb-[#7E3AF2] scrollbar-sky-300  overflow-y-scroll'>
+                            {Headlines.map((item, index) => (
+
+                                <div key={index} className=' max-w-full h-[120px] p-5 mt-8 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200'>
+                                    <div className='w-[454px]  h-[80px] grid grid-cols-[15%_auto] items-center gap-8'>
+                                        <div><img src={img} alt="not found" className='w-20 h-20 rounded-xl' /></div>
+                                        <div>
+                                            <h1 className='text-md text-gray-500'>Entertainment Desk</h1>
+                                            <a className='text-md font-semibold  break-words line-clamp-2' href={item.url}>{item.headline}</a>
+                                            <p className='text-md text-gray-500'>{item.docCount}</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h1 className='text-2xl font-bold text-[#7E3AF2]'>{item.score}</h1>
+                                    </div>
                                 </div>
-                            </div>
-                            <div>
-                                <h1 className='text-2xl font-bold text-[#7E3AF2]'>2.4</h1>
-                            </div>
-                        </div>
-                        <div className='max-w-full h-[120px] p-5 mt-4 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200 '>
-                            <div className='w-[454px]  h-[80px] flex items-center gap-8'>
-                                <div><img src={img5} alt="not found" className='w-20 h-20 rounded-xl' /></div>
-                                <div>
-                                    <h1 className='text-md text-gray-500'>Entertainment Desk</h1>
-                                    <a className='text-xl font-semibold ' href='#####'>Sanjay Dutt men 62/ year old</a>
-                                    <p className='text-md text-gray-500'>11:02 am | 1 hour ago</p>
-                                </div>
-                            </div>
-                            <div>
-                                <h1 className='text-2xl font-bold text-[#7E3AF2]'>4.4</h1>
-                            </div>
-                        </div>
-                        <div className='max-w-full h-[120px] p-5 mt-4 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200 '>
-                            <div className='w-[454px]  h-[80px] flex items-center gap-8'>
-                                <div><img src={img5} alt="not found" className='w-20 h-20 rounded-xl' /></div>
-                                <div>
-                                    <h1 className='text-md text-gray-500'>Entertainment Desk</h1>
-                                    <a className='text-xl font-semibold ' href='#####'>Sanjay Dutt men 62/ year old</a>
-                                    <p className='text-md text-gray-500'>11:02 am | 1 hour ago</p>
-                                </div>
-                            </div>
-                            <div>
-                                <h1 className='text-2xl font-bold text-[#7E3AF2]'>4.4</h1>
-                            </div>
-                        </div>
-                        <div className='max-w-full h-[120px] p-5 mt-4 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200 '>
-                            <div className='w-[454px]  h-[80px] flex items-center gap-8'>
-                                <div><img src={img5} alt="not found" className='w-20 h-20 rounded-xl' /></div>
-                                <div className='p-5'>
-                                    <h1 className='text-md text-gray-500'>Hilighited Desk</h1>
-                                    <a className='text-xl font-semibold ' href='#####'>Sanjay Dutt men 62/ year old</a>
-                                    <p className='text-md text-gray-500'>11:02 am | 1 hour ago</p>
-                                </div>
-                            </div>
-                            <div>
-                                <h1 className='text-2xl font-bold text-[#7E3AF2]'>4.4</h1>
-                            </div>
-                        </div>
-                        <div className='max-w-full h-[120px] p-5 mt-4 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200 '>
-                            <div className='w-[454px]  h-[80px] flex items-center gap-8'>
-                                <div><img src={img6} alt="not found" className='w-20 h-20 rounded-xl' /></div>
-                                <div>
-                                    <h1 className='text-md text-gray-500'>Weather Desk</h1>
-                                    <a className='text-xl font-semibold ' href='#####'>Globel climate summit reach historic</a>
-                                    <p className='text-md text-gray-500'>11:02 am | 1 hour ago</p>
-                                </div>
-                            </div>
-                            <div>
-                                <h1 className='text-2xl font-bold text-[#7E3AF2]'>4.4</h1>
-                            </div>
+                            ))}
                         </div>
                     </div>
                     <div className='max-w-full  '>
-                        <div><h1 className='h-[20px] text-md font-bold text-gray-500  '>Top Trends</h1></div>
-                        <div className='max-w-full mx-auto rounded-md mt-8  shadow-inner '>
-                            <WordCloud words={wordData} />
-                        </div>
+                        <Worddata />
                     </div>
-
                 </div>
+
             </div>
+
+
         </>
     )
 }
