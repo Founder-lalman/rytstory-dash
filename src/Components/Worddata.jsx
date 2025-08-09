@@ -73,7 +73,7 @@ const Worddata = () => {
 
         const worddata = async () => {
             try {
-                const response = await fetch('https://43.205.65.179:8000/elastic_data/discover_feed_data', {
+                const response = await fetch('https://www.rytstory.com/api/data/discover-feed', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
