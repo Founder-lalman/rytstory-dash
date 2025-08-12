@@ -114,4 +114,4 @@ const Worddata = () => {
     )
 }
 
-export default Worddata
+export default Worddata;

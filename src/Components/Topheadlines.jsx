@@ -1,177 +1,121 @@
 import React, { useEffect, useState } from 'react'
 import img from '../assets/satyam.jpg'
 import { FaSortAmountUpAlt } from "react-icons/fa";
+import { usefilter } from '../context/Filtercontext';
 
 import Worddata from './Worddata';
 
-const body = {
-    "aggs": {
-        "0": {
-            "terms": {
-                "field": "url.keyword",
-                "order": {
-                    "_key": "asc"
-                },
-                "size": 3000
-            },
-            "aggs": {
-                "1": {
-                    "terms": {
-                        "field": "headline.keyword",
-                        "order": {
-                            "1-orderAgg": "desc"
-                        },
-                        "size": 1000
-                    },
-                    "aggs": {
-                        "2": {
-                            "cardinality": {
-                                "field": "email.keyword"
-                            }
-                        },
-                        "1-orderAgg": {
-                            "cardinality": {
-                                "field": "email.keyword"
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    },
-    "size": 0,
-    "fields": [
-        {
-            "field": "dateCrawled",
-            "format": "date_time"
-        }
-    ],
-    "script_fields": {},
-    "stored_fields": [
-        "*"
-    ],
-    "runtime_mappings": {
-        "clickhere_url_link": {
-            "type": "keyword",
-            "script": {
-                "source": "if (!doc['url.keyword'].empty) {\n  emit(doc['url.keyword'].value);\n}"
-            }
-        }
-    },
-    "_source": {
-        "excludes": []
-    },
-    "query": {
-        "bool": {
-            "must": [],
-            "filter": [
-                {
-                    "range": {
-                        "dateCrawled": {
-                            "gte": "now/d",
-                            "lte": "now"
-                        }
-                    }
-                }
-            ],
-            "should": [],
-            "must_not": []
-        }
-    }
-}
-
-// const body= 
-// {
-//   "aggs": {
-//     "0": {
-//       "terms": {
-//         "field": "url.keyword",
-//         "order": {
-//           "_key": "asc"
-//         },
-//         "size": 3000
-//       },
-//       "aggs": {
-//         "1": {
-//           "terms": {
-//             "field": "headline.keyword",
-//             "order": {
-//               "1-orderAgg": "desc"
-//             },
-//             "size": 1000
-//           },
-//           "aggs": {
-//             "2": {
-//               "cardinality": {
-//                 "field": "email.keyword"
-//               }
-//             },
-//             "1-orderAgg": {
-//               "cardinality": {
-//                 "field": "email.keyword"
-//               }
-//             }
-//           }
-//         }
-//       }
-//     }
-//   },
-//   "size": 0,
-//   "fields": [
-//     {
-//       "field": "dateCrawled",
-//       "format": "date_time"
-//     }
-//   ],
-//   "script_fields": {},
-//   "stored_fields": [
-//     "*"
-//   ],
-//   "runtime_mappings": {
-//     "clickhere_url_link": {
-//       "type": "keyword",
-//       "script": {
-//         "source":"if (!doc['url.keyword'].empty) {\n  emit(doc['url.keyword'].value);\n}"
-//       }
-//     }
-//   },
-//   "_source": {
-//     "excludes": []
-//   },
-//   "query": {
-//     "bool": {
-//       "must": [],
-//       "filter": [
-//         {
-//           "range": {
-//            "dateCrawled": {
-//                 "gte": "now/d",
-//                 "lte": "now"
-//             }
-//           }
-//         }
-//       ],
-//       "should": [], 
-//       "must_not": []
-//     }
-//   }
-// } 
-
-
-
 const Topheadlines = () => {
+    const { filters } = usefilter();
     const [Headlines, setHeadlines] = useState([])
 
     useEffect(() => {
         const fetchheadline = async () => {
             try {
+                 const filterConditions = [];
+                if (filters.publishers.length > 0) {
+                    filterConditions.push({
+                        terms: {
+                            "url_publishername.keyword": filters.publishers.map(p => p.value)
+                        }
+                    });
+                }
+
+                if (filters.categories.length > 0) {
+                    filterConditions.push({
+                        terms: {
+                            "category.keyword": filters.categories.map(c => c.value)
+                        }
+                    });
+                }
+
+                if (filters.formats.length > 0) {
+                    filterConditions.push({
+                        terms: {
+                            "mainEntityOfPage.keyword": filters.formats.map(f => f.value)
+                        }
+                    });
+                }
+
+                if (filters.countries.length > 0) {
+                    filterConditions.push({
+                        terms: {
+                            "location.keyword": filters.countries.map(co => co.value)
+                        }
+                    });
+                }
                 const response = await fetch('https://www.rytstory.com/api/data/discover-feed', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Basic bmltYTppbWFnZQ=='
                     },
-                    body: JSON.stringify(body)
+                    body: JSON.stringify(
+                        {
+                            "aggs": {
+                                "0": {
+                                    "terms": {
+                                        "field": "url.keyword",
+                                        "order": {
+                                            "_key": "asc"
+                                        },
+                                        "size": 3000
+                                    },
+                                    "aggs": {
+                                        "1": {
+                                            "terms": {
+                                                "field": "headline.keyword",
+                                                "order": {
+                                                    "1-orderAgg": "desc"
+                                                },
+                                                "size": 1000
+                                            },
+                                            "aggs": {
+                                                "2": {
+                                                    "cardinality": {
+                                                        "field": "email.keyword"
+                                                    }
+                                                },
+                                                "1-orderAgg": {
+                                                    "cardinality": {
+                                                        "field": "email.keyword"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "size": 0,
+                            "fields": [
+                                {
+                                    "field": "dateCrawled",
+                                    "format": "date_time"
+                                }
+                            ],
+                            "script_fields": {},
+                            "stored_fields": [
+                                "*"
+                            ],
+                            "runtime_mappings": {
+                                "clickhere_url_link": {
+                                    "type": "keyword",
+                                    "script": {
+                                        "source": "if (!doc['url.keyword'].empty) {\n  emit(doc['url.keyword'].value);\n}"
+                                    }
+                                }
+                            },
+                            "_source": {
+                                "excludes": []
+                            },
+                            "query": {
+                                "bool": {
+                                    "must": [],
+                                    "filter": filterConditions
+                                }
+                            }
+                        }
+                    )
                 })
                 const data = await response.json()
                 const aggBuckets = data?.aggregations?.["0"]?.buckets || [];
@@ -196,9 +140,10 @@ const Topheadlines = () => {
                 console.log('error', error)
             }
         };
+
         fetchheadline();
 
-    }, [])
+    }, [filters])
     return (
         <>
             <div className='max-w-full mx-auto'>

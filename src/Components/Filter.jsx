@@ -7,6 +7,7 @@ import { FaCalendarAlt } from "react-icons/fa";
 import { MdOutlineSearch } from "react-icons/md";
 import makeAnimated from 'react-select/animated';
 const animatedComponents = makeAnimated();
+import { usefilter } from '../context/Filtercontext';
 
 
 const customStyles = {
@@ -22,7 +23,9 @@ const customStyles = {
 };
 
 const Filter = () => {
-
+    
+    const { filters, setFilters } = usefilter();
+     
     const [publisherOptions, setPublisherOptions] = useState([]);
     const [selectedPublishers, setSelectedPublishers] = useState([]);
 
@@ -144,8 +147,8 @@ const Filter = () => {
                             <Select
                                 closeMenuOnSelect={false}
                                 components={animatedComponents}
-                                value={selectedPublishers}
-                                onChange={setSelectedPublishers}
+                                value={filters.publishers}
+                                onChange={(selected) => setFilters(prev => ({ ...prev, publishers: selected }))}
                                 isMulti
                                 options={publisherOptions}
                                 placeholder="Publisher"
@@ -156,8 +159,8 @@ const Filter = () => {
                             <Select
                                 closeMenuOnSelect={false}
                                 components={animatedComponents}
-                                value={selectedCategories}
-                                onChange={setSelectedCategories}
+                                value={filters.categories}
+                                onChange={(selected) => setFilters(prev => ({ ...prev, categories: selected }))}
                                 isMulti
                                 options={categoryOptions}
                                 placeholder="Categories"
@@ -168,8 +171,8 @@ const Filter = () => {
                             <Select
                                 closeMenuOnSelect={false}
                                 components={animatedComponents}
-                                value={selectedFormats}
-                                onChange={setSelectedFormats}
+                                value={filters.formats}
+                                onChange={(selected) => setFilters(prev => ({ ...prev, formats: selected }))}
                                 isMulti
                                 options={formatOptions}
                                 placeholder="Format"
@@ -181,8 +184,8 @@ const Filter = () => {
                                 closeMenuOnSelect={false}
                                 options={countryOptions}
                                 isMulti
-                                value={selectedCountries}
-                                onChange={setSelectedCountries}
+                                value={filters.countries}
+                                onChange={(selected) => setFilters(prev => ({ ...prev, countries: selected }))}
                                 placeholder="Country"
                                 styles={customStyles}
                             />
