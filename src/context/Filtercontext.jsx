@@ -7,7 +7,8 @@ const FilterProvider = ({ children }) => {
         publishers: [],
         categories: [],
         formats: [],
-        countries: []
+        countries: [],
+        Words : []
     });
     return (
         <>

@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import cloud from 'd3-cloud';
+import { usefilter } from '../context/Filtercontext';
 
 const WordCloud = ({ words }) => {
+    const { setFilters } = usefilter()
     const svgRef = useRef();
     const [selectedWord, setSelectedWord] = useState(null);
 
@@ -17,9 +19,10 @@ const WordCloud = ({ words }) => {
         const layout = cloud()
             .size([width, height])
             .words(
-                displayWords.map(d => ({
+                (displayWords || []).map(d => ({
                     text: d.text,
-                    size: 10 + d.value, // soft scale
+                    // size: 10 + d.value,
+                    size: Math.max(12, Math.min(d.value, 40)), // soft scale
                 }))
             )
             .padding(5)
@@ -64,16 +67,23 @@ const WordCloud = ({ words }) => {
                 .text(d => d.text)
                 .on('click', (event, d) => {
                     setSelectedWord(d.text);
+                    setFilters(prev => ({
+                        ...prev,
+                        Words: [{ value: d.text, label: d.text }]
+                    }));
                 });
         }
-    }, [words, selectedWord]);
+    }, [words, selectedWord, setFilters]);
 
     return (
         <div className="text-center w-full h-[550px] overflow-hidden">
             <svg ref={svgRef} className="w-full h-full"></svg>
             {selectedWord && (
                 <button
-                    onClick={() => setSelectedWord(null)}
+                    onClick={() => {
+                        setSelectedWord(null);
+                        setFilters(prev => ({ ...prev, Words: [] }));
+                    }}
                     className="mt-2 px-4 py-1 bg-purple-600 text-white rounded hover:bg-purple-700"
                 >
                     Show All

@@ -8,6 +8,7 @@ import { MdOutlineSearch } from "react-icons/md";
 import makeAnimated from 'react-select/animated';
 const animatedComponents = makeAnimated();
 import { usefilter } from '../context/Filtercontext';
+import { RxCross2 } from "react-icons/rx";
 
 
 const customStyles = {
@@ -23,9 +24,9 @@ const customStyles = {
 };
 
 const Filter = () => {
-    
+
     const { filters, setFilters } = usefilter();
-     
+
     const [publisherOptions, setPublisherOptions] = useState([]);
     const [selectedPublishers, setSelectedPublishers] = useState([]);
 
@@ -138,10 +139,29 @@ const Filter = () => {
         fetchdata();
     }, []);
 
+    const selectedWord =
+        filters.Words && filters.Words.length > 0 ? filters.Words[0].value : null;
+
+    const handlereload = () => {
+        window.location.reload();
+    }
+
     return (
         <>
             <div className="max-w-full mx-auto  ">
+                <div className=" max-w-full mx-auto px-25 mb-2 ">
+                    {selectedWord ?(
+                        <button
+                        className="cursor-pointer justify-center items-center flex gap-4 border border-gray-400 rounded-[4px] py-1 px-2 text-gray-500 "
+                        onClick={handlereload}> {selectedWord}<RxCross2 />
+
+                    </button>
+
+                    ):"" }
+                    
+                </div>
                 <div className="max-w-full mx-auto flex flex-col-2 px-25 gap-10 justify-between items-center ">
+
                     <div className='flex gap-5'>
                         <div>
                             <Select
