@@ -4,7 +4,7 @@ import cloud from 'd3-cloud';
 import { usefilter } from '../context/Filtercontext';
 
 const WordCloud = ({ words }) => {
-    const { setFilters } = usefilter()
+    const { setFilters } = usefilter();
     const svgRef = useRef();
     const [selectedWord, setSelectedWord] = useState(null);
 
@@ -16,20 +16,29 @@ const WordCloud = ({ words }) => {
             ? words.filter(word => word.text === selectedWord)
             : words;
 
+        const limitedWords = (displayWords || []).slice(0, 50);
+
+        const sizeScale = d3
+            .scaleSqrt()
+            .domain([
+                d3.min(limitedWords, d => d.value) || 1,
+                d3.max(limitedWords, d => d.value) || 100
+            ])
+            .range([20, 70]);
+
         const layout = cloud()
             .size([width, height])
             .words(
-                (displayWords || []).map(d => ({
+                limitedWords.map(d => ({
                     text: d.text,
-                    // size: 10 + d.value,
-                    size: Math.max(12, Math.min(d.value, 40)), // soft scale
+                    size: sizeScale(d.value)
                 }))
             )
-            .padding(5)
-            .rotate(() => (Math.random() > 0.85 ? 90 : 0)) // mostly horizontal
+            .padding(8) // More padding
+            .rotate(() => (Math.random() > 0.85 ? 90 : 0))
             .font('Segoe UI')
             .fontSize(d => d.size)
-            .spiral('archimedean') // oval-like layout
+            .spiral('archimedean') // Better for dense placement
             .on('end', draw);
 
         layout.start();
