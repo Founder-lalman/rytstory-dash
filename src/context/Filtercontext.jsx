@@ -8,7 +8,7 @@ const FilterProvider = ({ children }) => {
         categories: [],
         formats: [],
         countries: [],
-        Words : []
+        Words: []
     });
     return (
         <>
@@ -21,4 +21,4 @@ const FilterProvider = ({ children }) => {
 
 export default FilterProvider;
 
-export const usefilter = ()=> useContext(Filtercontext);
+export const usefilter = () => useContext(Filtercontext);
