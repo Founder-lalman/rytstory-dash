@@ -153,6 +153,34 @@ const Topheadlines = () => {
         fetchheadline();
 
     }, [filters, order])
+
+
+    const renderCard = (item, isLoading, key) => (
+        <div
+            key={key}
+            className="p-5 mt-8 rounded-lg bg-white shadow-inner shadow-gray-200 flex items-start gap-4"
+        >
+            <div className="relative overflow-hidden rounded-xl" style={{ width: 80, height: 80 }}>
+                    <div className="absolute inset-0 bg-slate-200">
+                        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
+                    </div>
+            </div>
+            <div className="flex-1 space-y-2">
+                    <>
+                        <div className="relative overflow-hidden h-4 w-1/3 bg-slate-200 rounded">
+                            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
+                        </div>
+                        <div className="relative overflow-hidden h-5 w-full bg-slate-200 rounded">
+                            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
+                        </div>
+                        <div className="relative overflow-hidden h-3 w-2/3 bg-slate-200 rounded">
+                            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
+                        </div>
+                    </> 
+            </div>        
+        </div>
+    );
+
     return (
         <>
             <div className='max-w-full mx-auto'>
@@ -189,9 +217,7 @@ const Topheadlines = () => {
                                     </div>
                                 ))
                             ) :
-                            <div className='flex justify-center items-center mt-20'>
-                                <div className="w-16 h-16 border-4 border-gray-400 border-b-transparent rounded-full animate-spin"></div>
-                                </div>
+                                (Array.from({ length: 50 }).map((_, i) => renderCard({}, true, i)))
                             }
                         </div>
                     </div>
