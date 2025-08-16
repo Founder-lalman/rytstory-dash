@@ -9,7 +9,6 @@ const Topheadlines = () => {
     const { filters } = usefilter();
     const [Headlines, setHeadlines] = useState([])
     const [order, setOrder] = useState('asc')
-    console.log(order)
 
     useEffect(() => {
         const fetchheadline = async () => {
@@ -53,6 +52,9 @@ const Topheadlines = () => {
                         }
                     })
                 }
+                filterConditions.push({
+                    range: { dateCrawled: { gte: "now/d", lte: "now" } }
+                });
                 const response = await fetch('https://www.rytstory.com/api/data/discover-feed', {
                     method: 'POST',
                     headers: {
@@ -161,23 +163,23 @@ const Topheadlines = () => {
             className="p-5 mt-8 rounded-lg bg-white shadow-inner shadow-gray-200 flex items-start gap-4"
         >
             <div className="relative overflow-hidden rounded-xl" style={{ width: 80, height: 80 }}>
-                    <div className="absolute inset-0 bg-slate-200">
-                        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
-                    </div>
+                <div className="absolute inset-0 bg-slate-200">
+                    <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
+                </div>
             </div>
             <div className="flex-1 space-y-2">
-                    <>
-                        <div className="relative overflow-hidden h-4 w-1/3 bg-slate-200 rounded">
-                            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
-                        </div>
-                        <div className="relative overflow-hidden h-5 w-full bg-slate-200 rounded">
-                            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
-                        </div>
-                        <div className="relative overflow-hidden h-3 w-2/3 bg-slate-200 rounded">
-                            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
-                        </div>
-                    </> 
-            </div>        
+                <>
+                    <div className="relative overflow-hidden h-4 w-1/3 bg-slate-200 rounded">
+                        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
+                    </div>
+                    <div className="relative overflow-hidden h-5 w-full bg-slate-200 rounded">
+                        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
+                    </div>
+                    <div className="relative overflow-hidden h-3 w-2/3 bg-slate-200 rounded">
+                        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
+                    </div>
+                </>
+            </div>
         </div>
     );
 
@@ -207,7 +209,8 @@ const Topheadlines = () => {
                                             <div><img src={img} alt="not found" className='w-20 h-20 rounded-xl' /></div>
                                             <div>
                                                 <h1 className='text-md text-gray-500'>Entertainment Desk</h1>
-                                                <a className='text-md font-semibold  break-words line-clamp-2' href={item.url}>{item.headline}</a>
+                                                <a className='text-md font-semibold  break-words line-clamp-2' href={item.url} target="_blank"
+                                                   >{item.headline}</a>
                                                 <p className='text-md text-gray-500'>{item.docCount}</p>
                                             </div>
                                         </div>

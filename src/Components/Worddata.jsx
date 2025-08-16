@@ -45,7 +45,9 @@ const Worddata = () => {
                         }
                     });
                 }
-
+                filtereddata.push({
+                    range: { dateCrawled: { gte: "now/d", lte: "now" } }
+                });
                 
                 const response = await fetch('https://www.rytstory.com/api/data/discover-feed', {
                     method: 'POST',
@@ -110,7 +112,8 @@ const Worddata = () => {
                     text: bucket.key,
                     value: bucket[1].value
                 }));
-                setclouddata(formattedData);
+                const cloudtext = formattedData.filter(item =>item.text !== "no value");
+                setclouddata(cloudtext);
                 console.log("formatted data", formattedData)
             }
 

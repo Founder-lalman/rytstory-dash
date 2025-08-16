@@ -174,11 +174,11 @@ const Filter = () => {
 
             {/* Search Bar */}
             <div className="px-25 mt-5 relative">
-                <MdOutlineSearch className="absolute left-26 top-1 text-[#7E3AF2] text-2xl" />
+                <MdOutlineSearch className="absolute left-26 top-[6px] text-[#7E3AF2] text-3xl" />
                 <input
                     type="search"
                     placeholder="Search"
-                    className="border-1 border-gray-400 rounded-sm px-4 pl-8 py-1 w-full outline-none"
+                    className="border-1 border-gray-400 rounded-sm px-4 pl-10 py-2 w-full outline-none"
                 />
             </div>
         </div>
