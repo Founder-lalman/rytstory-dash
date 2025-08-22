@@ -8,7 +8,7 @@ import Worddata from './Worddata';
 const Topheadlines = () => {
     const { filters } = usefilter();
     const [Headlines, setHeadlines] = useState([])
-    const [order, setOrder] = useState('asc')
+    const [order, setOrder] = useState('desc')
 
     useEffect(() => {
         const fetchheadline = async () => {
@@ -53,7 +53,7 @@ const Topheadlines = () => {
                     })
                 }
                 filterConditions.push({
-                    range: { dateCrawled: { gte: "now/d", lte: "now" } }
+                    range: { dateCrawled: { gte: "now-7d/d", lte: "now/d" } }
                 });
                 const response = await fetch('https://www.rytstory.com/api/data/discover-feed', {
                     method: 'POST',
@@ -66,32 +66,60 @@ const Topheadlines = () => {
                             "aggs": {
                                 "0": {
                                     "terms": {
-                                        "field": "url.keyword",
+                                        "field": "headline.keyword",
                                         "order": {
-                                            "_key": order
+                                            "0-orderAgg": order
                                         },
-                                        "size": 3000
+                                        "size": 1000
                                     },
                                     "aggs": {
                                         "1": {
                                             "terms": {
-                                                "field": "headline.keyword",
+                                                "field": "url.keyword",
                                                 "order": {
-                                                    "1-orderAgg": "desc"
+                                                    "_key": order
                                                 },
-                                                "size": 1000
+                                                "size": 3,
+                                                "shard_size": 25
                                             },
                                             "aggs": {
                                                 "2": {
-                                                    "cardinality": {
-                                                        "field": "email.keyword"
-                                                    }
-                                                },
-                                                "1-orderAgg": {
-                                                    "cardinality": {
-                                                        "field": "email.keyword"
+                                                    "terms": {
+                                                        "field": "author_name.keyword",
+                                                        "order": {
+                                                            "_key": order
+                                                        },
+                                                        "size": 3,
+                                                        "shard_size": 25
+                                                    },
+                                                    "aggs": {
+                                                        "3": {
+                                                            "date_histogram": {
+                                                                "field": "dateCrawled",
+                                                                "calendar_interval": "1d",
+                                                                "time_zone": "Asia/Calcutta",
+                                                                "min_doc_count": 1,
+                                                                "extended_bounds": {
+                                                                    "min": "now-7d/d",
+                                                                    "max": "now/d"
+                                                                }
+                                                            }
+                                                            ,
+                                                            "aggs": {
+                                                                "4": {
+                                                                    "cardinality": {
+                                                                        "field": "email.keyword"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
                                                     }
                                                 }
+                                            }
+                                        },
+                                        "0-orderAgg": {
+                                            "cardinality": {
+                                                "field": "email.keyword"
                                             }
                                         }
                                     }
@@ -122,27 +150,51 @@ const Topheadlines = () => {
                             "query": {
                                 "bool": {
                                     "must": [],
-                                    "filter": filterConditions
+                                    "filter": filterConditions,
+                                    "should": [],
+                                    "must_not": [
+                                        {
+                                            "match_phrase": {
+                                                "wiki_ents.keyword": "no value"
+                                            }
+                                        },
+                                        {
+                                            "bool": {
+                                                "should": [
+                                                    {
+                                                        "match_phrase": {
+                                                            "Entity_type.keyword": "Location"
+                                                        }
+                                                    }
+                                                ],
+                                                "minimum_should_match": 1
+                                            }
+                                        }
+                                    ]
                                 }
                             }
                         }
+
                     )
                 })
-                const data = await response.json()
-                const aggBuckets = data?.aggregations?.["0"]?.buckets || [];
-                console.log("aggBuckets", aggBuckets)
-                const parsedHeadlines = aggBuckets.map(urlBucket => {
-                    const headlineBucket = urlBucket["1"]?.buckets?.[0];
+                const data = await response.json();
+                const headlineBuckets = data?.aggregations?.["0"]?.buckets || [];
+
+                const parsedHeadlines = headlineBuckets.map(headBucket => {
+                    const urlBucket = headBucket["1"]?.buckets?.[0] || {};
+                    const authorBucket = urlBucket["2"]?.buckets?.[0] || {};
+                    const dateBucket = authorBucket["3"]?.buckets?.[0] || {};
+
                     return {
-                        url: urlBucket.key,
-                        headline: headlineBucket?.key || "Untitled",
-                        score: headlineBucket?.["1-orderAgg"]?.value || 0,
-                        docCount: urlBucket.doc_count,
-
-
+                        headline: headBucket.key, // headline.keyword
+                        url: urlBucket.key || "Untitled", // url.keyword
+                        author: authorBucket.key || "Unknown", // author_name.keyword
+                        dateCrawled: dateBucket.key_as_string || null, // formatted timestamp
+                        docCount: headBucket.doc_count ?? 0, // number of documents per headline
+                        score: headBucket["0-orderAgg"]?.value ?? 0 // cardinality score
                     };
                 });
-                console.log("parseheadline", parsedHeadlines)
+
                 setHeadlines(parsedHeadlines);
 
 
@@ -194,9 +246,9 @@ const Topheadlines = () => {
                             <div className='flex gap-0.5  items-center'>
                                 <h1 className='text-md font-bold text-gray-500'>Popularity</h1>
                                 <h1
-                                    onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
+                                    onClick={() => setOrder(order === "desc" ? "asc" : "desc")}
                                     className={`transition-transform duration-100 cursor-pointer 
-                                    ${order === "desc" ? "rotate-180" : "rotate-0"}`}
+                                    ${order === "desc" ? "rotate-0" : "rotate-180"}`}
                                 ><FaSortAmountUpAlt className="text-[#7E3AF2] w-5 h-5 " /></h1>
                             </div>
                         </div>
@@ -208,14 +260,14 @@ const Topheadlines = () => {
                                         <div className='w-[454px]  h-[80px] grid grid-cols-[15%_auto] items-center gap-8'>
                                             <div><img src={img} alt="not found" className='w-20 h-20 rounded-xl' /></div>
                                             <div>
-                                                <h1 className='text-md text-gray-500'>Entertainment Desk</h1>
+                                                <h1 className='text-md text-gray-500'>{item.author}</h1>
                                                 <a className='text-md font-semibold  break-words line-clamp-2' href={item.url} target="_blank"
-                                                   >{item.headline}</a>
-                                                <p className='text-md text-gray-500'>{item.docCount}</p>
+                                                >{item.headline}</a>
+                                                <p className='text-md text-gray-500'>{item.dateCrawled}</p>
                                             </div>
                                         </div>
                                         <div>
-                                            <h1 className='text-2xl font-bold text-[#7E3AF2]'>{item.score}</h1>
+                                            <h1 className='text-2xl font-bold text-[#7E3AF2]'>{item.docCount}</h1>
                                         </div>
                                     </div>
                                 ))
