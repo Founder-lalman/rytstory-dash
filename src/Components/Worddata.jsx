@@ -3,9 +3,6 @@ import { useState, useEffect } from 'react';
 import WordCloud from './WordCloud';
 import { usefilter } from '../context/Filtercontext';
 
-
-
-
 const Worddata = () => {
     const { filters } = usefilter();
 
@@ -45,10 +42,23 @@ const Worddata = () => {
                         }
                     });
                 }
-                filtereddata.push({
-                    range: { dateCrawled: { gte:"now-7d/d", lte: "now/d" } }
-                });
-                
+                if (filters.Date.length > 0) {
+                    filtereddata.push({
+                        range: {
+                            dateCrawled: filters.Date.map(da => da.value)
+                        }
+                    });
+                }
+                if (filters.search.length > 0) {
+                    filtereddata.push({
+                        "multi_match": {
+                            "type": "best_fields",
+                            "query": filters.search,
+                            "lenient": true
+                        }
+                    })
+                }
+                console.log("filtereddata ", filtereddata)
                 const response = await fetch('https://www.rytstory.com/api/data/discover-feed', {
                     method: 'POST',
                     headers: {
@@ -64,7 +74,7 @@ const Worddata = () => {
                                         "order": {
                                             "1": "desc"
                                         },
-                                        "size": 50
+                                        "size": 80
                                     },
                                     "aggs": {
                                         "1": {
@@ -112,7 +122,7 @@ const Worddata = () => {
                     text: bucket.key,
                     value: bucket[1].value
                 }));
-                const cloudtext = formattedData.filter(item =>item.text !== "no value");
+                const cloudtext = formattedData.filter(item => item.text !== "no value");
                 setclouddata(cloudtext);
             }
 

@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react'
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 import noimg from '../assets/noimage.png';
 import { FaSortAmountUpAlt } from "react-icons/fa";
 import { usefilter } from '../context/Filtercontext';
@@ -9,6 +11,7 @@ const Topheadlines = () => {
     const { filters } = usefilter();
     const [Headlines, setHeadlines] = useState([])
     const [order, setOrder] = useState('desc')
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchheadline = async () => {
@@ -172,22 +175,6 @@ const Topheadlines = () => {
                                 "bool": {
                                     "must": [],
                                     "filter": filterConditions,
-                                    // [
-                                    //     {
-                                    //         "match_phrase": {
-                                    //             "location.keyword": "usa"
-                                    //         }
-                                    //     },
-                                    //     {
-                                    //         "range": {
-                                    //             "dateCrawled": {
-                                    //                 "format": "strict_date_optional_time",
-                                    //                 "gte": "2025-08-26T17:17:00.882Z",
-                                    //                 "lte": "2025-08-26T18:17:00.882Z"
-                                    //             }
-                                    //         }
-                                    //     }
-                                    // ],
                                     "should": [],
                                     "must_not": []
                                 }
@@ -214,46 +201,44 @@ const Topheadlines = () => {
                         score: h["0-orderAgg"]?.value ?? 0
                     };
                 });
-
                 setHeadlines(parsedHeadlines);
-                console.log(parsedHeadlines);
-
-
-
             }
             catch (error) {
                 console.log('error', error)
             }
+            finally {
+                setIsLoading(false);
+            }
         };
-
         fetchheadline();
-
     }, [filters, order])
-    const renderCard = (item, isLoading, key) => (
-        <div
-            key={key}
-            className="p-5 mt-8 rounded-lg bg-white shadow-inner shadow-gray-200 flex items-start gap-4"
-        >
-            <div className="relative overflow-hidden rounded-xl" style={{ width: 80, height: 80 }}>
-                <div className="absolute inset-0 bg-slate-200">
-                    <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
+
+    const renderCard = () =>
+        Array.from({ length: 20 }).map((_, i) => (
+            <div
+                key={i}
+                className="p-5 mt-8 rounded-lg bg-white shadow-inner shadow-gray-200 flex items-start gap-4"
+            >
+                <div className="relative overflow-hidden rounded-xl" style={{ width: 80, height: 80 }}>
+                    <div className="absolute inset-0 bg-slate-200">
+                        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
+                    </div>
+                </div>
+                <div className="flex-1 space-y-2">
+                    <>
+                        <div className="relative overflow-hidden h-4 w-1/3 bg-slate-200 rounded">
+                            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
+                        </div>
+                        <div className="relative overflow-hidden h-5 w-full bg-slate-200 rounded">
+                            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
+                        </div>
+                        <div className="relative overflow-hidden h-3 w-2/3 bg-slate-200 rounded">
+                            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
+                        </div>
+                    </>
                 </div>
             </div>
-            <div className="flex-1 space-y-2">
-                <>
-                    <div className="relative overflow-hidden h-4 w-1/3 bg-slate-200 rounded">
-                        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
-                    </div>
-                    <div className="relative overflow-hidden h-5 w-full bg-slate-200 rounded">
-                        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
-                    </div>
-                    <div className="relative overflow-hidden h-3 w-2/3 bg-slate-200 rounded">
-                        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] animate-shimmer" />
-                    </div>
-                </>
-            </div>
-        </div>
-    );
+        ));
 
     return (
         <>
@@ -273,10 +258,13 @@ const Topheadlines = () => {
                             </div>
                         </div>
                         <div className='h-[600px] scrollbar scrollbar-thumb-[#7E3AF2] scrollbar-sky-300  overflow-y-scroll'>
-                            {Headlines.length > 0 ? (
-                                Headlines.map((item, index) => (
-
-                                    <div key={index} className=' max-w-full h-[120px] p-5 mt-8 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200'>
+                            {isLoading ? (
+                                renderCard()
+                            ) : Headlines.length === 0 ? (
+                                <div className="py-10 text-center text-gray-500">No headlines found.</div>
+                            ) : (
+                                Headlines.map((item, idx) => (
+                                    <div key={idx} className=' max-w-full h-[120px] p-5 mt-8 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200'>
                                         <div className='w-[454px]  h-[80px] grid grid-cols-[20%_auto] items-center gap-6'>
                                             <div>
                                                 <img src={item.imageUrl || noimg} alt="no value" className='w-30 h-20 rounded-md' /></div>
@@ -292,19 +280,14 @@ const Topheadlines = () => {
                                         </div>
                                     </div>
                                 ))
-                            ) :
-                                (Array.from({ length: 50 }).map((_, i) => renderCard({}, true, i)))
-                            }
+                            )}
                         </div>
                     </div>
                     <div className='max-w-full  '>
                         <Worddata />
                     </div>
                 </div>
-
             </div>
-
-
         </>
     )
 }
