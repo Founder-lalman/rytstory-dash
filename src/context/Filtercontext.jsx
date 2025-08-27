@@ -8,6 +8,8 @@ const FilterProvider = ({ children }) => {
         categories: [],
         formats: [],
         countries: [],
+        Date:[],
+        search:[],
         Words: []
     });
     return (
@@ -18,7 +20,6 @@ const FilterProvider = ({ children }) => {
         </>
     )
 }
-
 export default FilterProvider;
 
 export const usefilter = () => useContext(Filtercontext);

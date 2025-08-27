@@ -3,7 +3,7 @@ import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FaCalendarAlt } from "react-icons/fa";
-import { MdOutlineSearch } from "react-icons/md";
+import { MdOutlineSearch, MdWidthFull } from "react-icons/md";
 import makeAnimated from 'react-select/animated';
 import { usefilter } from '../context/Filtercontext';
 import { RxCross2 } from "react-icons/rx";
@@ -20,6 +20,12 @@ const customStyles = {
     }),
 };
 
+const dateOptions = [
+    { value: { gte: "now-30m", lte: "now" }, label: 'Last 30 min' },
+    { value: { gte: "now-1d/d", lte: "now/d" }, label: 'Last 1 days' },
+    { value: { gte: "now-7d/d", lte: "now/d" }, label: 'Last 7 days' }
+]
+
 const Filter = () => {
     const { filters, setFilters } = usefilter();
 
@@ -27,8 +33,6 @@ const Filter = () => {
     const [categoryOptions, setCategoryOptions] = useState([]);
     const [formatOptions, setFormatOptions] = useState([]);
     const [countryOptions, setCountryOptions] = useState([]);
-    const [selectedDate, setSelectedDate] = useState(null);
-
     const fetchdata = async () => {
         try {
             const response = await fetch('https://www.rytstory.com/api/data/discover-feed', {
@@ -124,6 +128,7 @@ const Filter = () => {
                         options={publisherOptions}
                         placeholder="Publisher"
                         styles={customStyles}
+                        className='min-w-40'
                     />
                     <Select
                         closeMenuOnSelect={false}
@@ -134,6 +139,7 @@ const Filter = () => {
                         options={categoryOptions}
                         placeholder="Categories"
                         styles={customStyles}
+                        className='min-w-40'
                     />
                     <Select
                         closeMenuOnSelect={false}
@@ -144,6 +150,7 @@ const Filter = () => {
                         options={formatOptions}
                         placeholder="Format"
                         styles={customStyles}
+                        className='min-w-40'
                     />
                     <Select
                         closeMenuOnSelect={false}
@@ -154,6 +161,7 @@ const Filter = () => {
                         options={countryOptions}
                         placeholder="Country"
                         styles={customStyles}
+                        className='min-w-40'
                     />
                 </div>
 
@@ -161,12 +169,16 @@ const Filter = () => {
                 <div>
                     <div className="relative flex gap-2 items-center">
                         <FaCalendarAlt className="absolute left-3 text-[#7E3AF2] text-xl" />
-                        <DatePicker
-                            selected={selectedDate}
-                            onChange={(selected) => setSelectedDate(selected)}
-                            placeholderText="Select date"
-                            className="border border-gray-400 rounded px-4 pl-10 py-2 focus:outline-none focus:ring-2 focus:ring-[#7E3AF2]"
-                            dateFormat="dd-MM-yyyy"
+                        <Select
+                            value={filters.Date && filters.Date.length > 0 ? filters.Date[0] : null}
+                            onChange={(selected) => { setFilters(prev => ({ ...prev, Date: selected ? [selected] : [] })); }}
+                            options={dateOptions}
+                            placeholder="Select date"
+                            styles={customStyles}
+                            isMulti={false}
+                            isClearable
+                            components={animatedComponents}
+                            className='min-w-40'
                         />
                     </div>
                 </div>
@@ -178,6 +190,8 @@ const Filter = () => {
                 <input
                     type="search"
                     placeholder="Search"
+                    value={filters.search}
+                    onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))} 
                     className="border-1 border-gray-400 rounded-sm px-4 pl-10 py-2 w-full outline-none"
                 />
             </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import img from '../assets/satyam.jpg'
+import noimg from '../assets/noimage.png';
 import { FaSortAmountUpAlt } from "react-icons/fa";
 import { usefilter } from '../context/Filtercontext';
 
@@ -52,9 +52,23 @@ const Topheadlines = () => {
                         }
                     })
                 }
-                filterConditions.push({
-                    range: { dateCrawled: { gte: "now-7d/d", lte: "now/d" } }
-                });
+                if (filters.Date.length > 0) {
+                    filterConditions.push({
+                        range: {
+                            dateCrawled: filters.Date.map(da => da.value)
+                        }
+                    });
+                }
+                if (filters.search.length > 0) {
+                    filterConditions.push({
+                        "multi_match": {
+                            "type": "best_fields",
+                            "query": filters.search,
+                            "lenient": true
+                        }
+                    })
+                }
+                console.log("search", filterConditions)
                 const response = await fetch('https://www.rytstory.com/api/data/discover-feed', {
                     method: 'POST',
                     headers: {
@@ -70,45 +84,52 @@ const Topheadlines = () => {
                                         "order": {
                                             "0-orderAgg": order
                                         },
-                                        "size": 1000
+                                        "size": 3000
                                     },
                                     "aggs": {
                                         "1": {
                                             "terms": {
                                                 "field": "url.keyword",
                                                 "order": {
-                                                    "_key": order
+                                                    "_key": "asc"
                                                 },
-                                                "size": 3,
-                                                "shard_size": 25
+                                                "size": 3000
                                             },
                                             "aggs": {
                                                 "2": {
                                                     "terms": {
-                                                        "field": "author_name.keyword",
+                                                        "field": "image_url.keyword",
                                                         "order": {
-                                                            "_key": order
+                                                            "_key": "asc"
                                                         },
-                                                        "size": 3,
-                                                        "shard_size": 25
+                                                        "size": 3000
                                                     },
                                                     "aggs": {
                                                         "3": {
-                                                            "date_histogram": {
-                                                                "field": "dateCrawled",
-                                                                "calendar_interval": "1d",
-                                                                "time_zone": "Asia/Calcutta",
-                                                                "min_doc_count": 1,
-                                                                "extended_bounds": {
-                                                                    "min": "now-7d/d",
-                                                                    "max": "now/d"
-                                                                }
-                                                            }
-                                                            ,
+                                                            "terms": {
+                                                                "field": "author_name.keyword",
+                                                                "order": {
+                                                                    "_key": "asc"
+                                                                },
+                                                                "size": 3000
+                                                            },
                                                             "aggs": {
                                                                 "4": {
-                                                                    "cardinality": {
-                                                                        "field": "email.keyword"
+                                                                    "date_histogram": {
+                                                                        "field": "dateCrawled",
+                                                                        "calendar_interval": "1h",
+                                                                        "time_zone": "Asia/Calcutta",
+                                                                        "extended_bounds": {
+                                                                            "min": 1756228620882,
+                                                                            "max": 1756232220882
+                                                                        }
+                                                                    },
+                                                                    "aggs": {
+                                                                        "5": {
+                                                                            "cardinality": {
+                                                                                "field": "email.keyword"
+                                                                            }
+                                                                        }
                                                                     }
                                                                 }
                                                             }
@@ -118,7 +139,7 @@ const Topheadlines = () => {
                                             }
                                         },
                                         "0-orderAgg": {
-                                            "cardinality": {
+                                            "value_count": {
                                                 "field": "email.keyword"
                                             }
                                         }
@@ -151,26 +172,24 @@ const Topheadlines = () => {
                                 "bool": {
                                     "must": [],
                                     "filter": filterConditions,
+                                    // [
+                                    //     {
+                                    //         "match_phrase": {
+                                    //             "location.keyword": "usa"
+                                    //         }
+                                    //     },
+                                    //     {
+                                    //         "range": {
+                                    //             "dateCrawled": {
+                                    //                 "format": "strict_date_optional_time",
+                                    //                 "gte": "2025-08-26T17:17:00.882Z",
+                                    //                 "lte": "2025-08-26T18:17:00.882Z"
+                                    //             }
+                                    //         }
+                                    //     }
+                                    // ],
                                     "should": [],
-                                    "must_not": [
-                                        {
-                                            "match_phrase": {
-                                                "wiki_ents.keyword": "no value"
-                                            }
-                                        },
-                                        {
-                                            "bool": {
-                                                "should": [
-                                                    {
-                                                        "match_phrase": {
-                                                            "Entity_type.keyword": "Location"
-                                                        }
-                                                    }
-                                                ],
-                                                "minimum_should_match": 1
-                                            }
-                                        }
-                                    ]
+                                    "must_not": []
                                 }
                             }
                         }
@@ -180,22 +199,25 @@ const Topheadlines = () => {
                 const data = await response.json();
                 const headlineBuckets = data?.aggregations?.["0"]?.buckets || [];
 
-                const parsedHeadlines = headlineBuckets.map(headBucket => {
-                    const urlBucket = headBucket["1"]?.buckets?.[0] || {};
-                    const authorBucket = urlBucket["2"]?.buckets?.[0] || {};
-                    const dateBucket = authorBucket["3"]?.buckets?.[0] || {};
-
+                const parsedHeadlines = headlineBuckets.map(h => {
+                    const urlB = h["1"]?.buckets?.[0] || {};
+                    const imgB = urlB["2"]?.buckets?.[0] || {};
+                    const authB = imgB["3"]?.buckets?.[0] || {};
+                    const dateB = authB["4"]?.buckets?.[0] || {};
                     return {
-                        headline: headBucket.key, // headline.keyword
-                        url: urlBucket.key || "Untitled", // url.keyword
-                        author: authorBucket.key || "Unknown", // author_name.keyword
-                        dateCrawled: dateBucket.key_as_string || null, // formatted timestamp
-                        docCount: headBucket.doc_count ?? 0, // number of documents per headline
-                        score: headBucket["0-orderAgg"]?.value ?? 0 // cardinality score
+                        headline: h.key,
+                        url: urlB.key || "Untitled",
+                        imageUrl: imgB.key,
+                        author: authB.key || "Unknown",
+                        dateCrawled: dateB.key_as_string || null,
+                        docCount: h.doc_count ?? 0,
+                        score: h["0-orderAgg"]?.value ?? 0
                     };
                 });
 
                 setHeadlines(parsedHeadlines);
+                console.log(parsedHeadlines);
+
 
 
             }
@@ -207,8 +229,6 @@ const Topheadlines = () => {
         fetchheadline();
 
     }, [filters, order])
-
-
     const renderCard = (item, isLoading, key) => (
         <div
             key={key}
@@ -257,8 +277,9 @@ const Topheadlines = () => {
                                 Headlines.map((item, index) => (
 
                                     <div key={index} className=' max-w-full h-[120px] p-5 mt-8 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200'>
-                                        <div className='w-[454px]  h-[80px] grid grid-cols-[15%_auto] items-center gap-8'>
-                                            <div><img src={img} alt="not found" className='w-20 h-20 rounded-xl' /></div>
+                                        <div className='w-[454px]  h-[80px] grid grid-cols-[20%_auto] items-center gap-6'>
+                                            <div>
+                                                <img src={item.imageUrl || noimg} alt="no value" className='w-30 h-20 rounded-md' /></div>
                                             <div>
                                                 <h1 className='text-md text-gray-500'>{item.author}</h1>
                                                 <a className='text-md font-semibold  break-words line-clamp-2' href={item.url} target="_blank"
