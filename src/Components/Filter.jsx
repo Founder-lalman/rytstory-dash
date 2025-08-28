@@ -156,7 +156,7 @@ const Filter = () => {
                         closeMenuOnSelect={false}
                         components={animatedComponents}
                         value={filters.formats}
-                        onClick={(selected) => setFilters(prev => ({ formats: selected }))}
+                        onChange={(selected) => setFilters(prev => ({...prev, formats: selected }))}
                         isMulti
                         options={formatOptions}
                         placeholder="Format"
