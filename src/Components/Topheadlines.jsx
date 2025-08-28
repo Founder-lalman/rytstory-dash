@@ -213,6 +213,7 @@ const Topheadlines = () => {
                     };
                 });
                 setHeadlines(parsedHeadlines);
+                console.log("parseheadline", parsedHeadlines)
             }
             catch (error) {
                 console.log('error', error)
@@ -276,7 +277,15 @@ const Topheadlines = () => {
                                     <div key={idx} className=' max-w-full h-[120px] p-5 mt-8 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200'>
                                         <div className='w-[454px]  h-[80px] grid grid-cols-[20%_auto] items-center gap-6'>
                                             <div>
-                                                <img src={item.imageUrl || noimg} alt="no value" className='w-30 h-20 rounded-md' /></div>
+                                                <img src={item.imageUrl !== undefined && item.imageUrl !== "no value" ? item.imageUrl : noimg}
+                                                    alt="image"
+                                                    className="w-30 h-20 rounded-md"
+                                                    onError={(e) => {
+                                                        e.currentTarget.onerror = null;
+                                                        e.currentTarget.src = noimg;
+                                                    }}
+                                                />
+                                            </div>
                                             <div>
                                                 <h1 className='text-md text-gray-500'>{item.author}</h1>
                                                 <a className='text-md font-semibold  break-words line-clamp-2' href={item.url} target="_blank"

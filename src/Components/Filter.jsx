@@ -22,7 +22,7 @@ const customStyles = {
 const dateOptions = [
     { value: { gte: "now-30m", lte: "now" }, label: 'Last 30 min' },
     { value: { gte: "now-1d/d", lte: "now" }, label: 'Last 1 days' },
-    { value: { gte: "now-8d/d", lte: "now/d" }, label: 'Last 7 days' },
+    { value: { gte: "now-7d/d", lte: "now/d" }, label: 'Last 7 days' },
     { value: { gte: "now-10d/d", lte: "now/d" }, label: 'Last 10 days' }
 ]
 
@@ -36,12 +36,16 @@ const Filter = () => {
     const [inputValue, setInputValue] = useState('');
 
     const commitSearch = () => {
-        setFilters(prev => ({ ...prev, search: inputValue }));
+        if (inputValue.length > 1) {
+            setFilters(prev => ({ ...prev, search: inputValue }));
+        }
     }
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             commitSearch();
+        } else if (e.key === 'Backspace') {
+            setFilters(prev => ({ ...prev, search: '' }));
         }
     };
     const fetchdata = async () => {
@@ -50,10 +54,10 @@ const Filter = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Basic bmltYTppbWFnZQ==' // your API key
+                    'Authorization': 'Basic bmltYTppbWFnZQ==' 
                 },
                 body: JSON.stringify({
-                    size: 0, // don't fetch docs, only aggregations
+                    size: 0, 
                     aggs: {
                         categories: {
                             terms: { field: "category.keyword", size: 1000, order: { _count: "desc" } }
@@ -115,7 +119,6 @@ const Filter = () => {
 
     return (
         <div className="max-w-full mx-auto">
-            {/* Reset Button */}
             <div className="max-w-full mx-auto px-25 mb-2">
                 {selectedWord && (
                     <button
@@ -127,7 +130,6 @@ const Filter = () => {
                 )}
             </div>
 
-            {/* Dropdown Filters */}
             <div className="max-w-full mx-auto flex flex-col-2 px-25 gap-10 justify-between items-center">
                 <div className="flex gap-5">
                     <Select
@@ -139,7 +141,7 @@ const Filter = () => {
                         options={publisherOptions}
                         placeholder="Publisher"
                         styles={customStyles}
-                        className='min-w-40'
+                        className='min-w-50'
                     />
                     <Select
                         closeMenuOnSelect={false}
@@ -150,18 +152,18 @@ const Filter = () => {
                         options={categoryOptions}
                         placeholder="Categories"
                         styles={customStyles}
-                        className='min-w-40'
+                        className='min-w-50'
                     />
                     <Select
                         closeMenuOnSelect={false}
                         components={animatedComponents}
                         value={filters.formats}
-                        onChange={(selected) => setFilters(prev => ({...prev, formats: selected }))}
+                        onChange={(selected) => setFilters(prev => ({ ...prev, formats: selected }))}
                         isMulti
                         options={formatOptions}
                         placeholder="Format"
                         styles={customStyles}
-                        className='min-w-40'
+                        className='min-w-50'
                     />
                     <Select
                         closeMenuOnSelect={false}
@@ -172,7 +174,7 @@ const Filter = () => {
                         options={countryOptions}
                         placeholder="Country"
                         styles={customStyles}
-                        className='min-w-40'
+                        className='min-w-50'
                     />
                 </div>
 
@@ -187,7 +189,7 @@ const Filter = () => {
                             placeholder="Select date"
                             styles={customStyles}
                             isMulti={false}
-                            isClearable
+                            // isClearable
                             components={animatedComponents}
                             className='min-w-40'
                         />
@@ -205,8 +207,8 @@ const Filter = () => {
                     onClick={commitSearch}
                     onKeyDown={handleKeyDown}
                     className="border border-gray-400 rounded px-4 pl-10 py-2 w-full outline-none"
-                    isClearable
-                    />
+                // isClearable
+                />
             </div>
         </div>
     );
