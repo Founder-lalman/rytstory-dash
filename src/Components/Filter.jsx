@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FaCalendarAlt } from "react-icons/fa";
 import { MdOutlineSearch, MdWidthFull } from "react-icons/md";
@@ -22,8 +21,9 @@ const customStyles = {
 
 const dateOptions = [
     { value: { gte: "now-30m", lte: "now" }, label: 'Last 30 min' },
-    { value: { gte: "now-1d/d", lte: "now/d" }, label: 'Last 1 days' },
-    { value: { gte: "now-7d/d", lte: "now/d" }, label: 'Last 7 days' }
+    { value: { gte: "now-1d/d", lte: "now" }, label: 'Last 1 days' },
+    { value: { gte: "now-8d/d", lte: "now/d" }, label: 'Last 7 days' },
+    { value: { gte: "now-10d/d", lte: "now/d" }, label: 'Last 10 days' }
 ]
 
 const Filter = () => {

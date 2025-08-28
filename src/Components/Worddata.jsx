@@ -49,7 +49,7 @@ const Worddata = () => {
                         }
                     });
                 }
-                if (filters.search.length > 0) {
+                if (filters.search.length > 3) {
                     filtereddata.push({
                         "multi_match": {
                             "type": "best_fields",

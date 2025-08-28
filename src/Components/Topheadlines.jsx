@@ -62,7 +62,7 @@ const Topheadlines = () => {
                         }
                     });
                 }
-                if (filters.search.length > 0) {
+                if (filters.search.length > 3) {
                     filterConditions.push({
                         "multi_match": {
                             "type": "best_fields",
@@ -184,6 +184,7 @@ const Topheadlines = () => {
                     )
                 })
                 const data = await response.json();
+                console.log("data",data)
                 const headlineBuckets = data?.aggregations?.["0"]?.buckets || [];
 
                 const parsedHeadlines = headlineBuckets.map(h => {
@@ -260,9 +261,7 @@ const Topheadlines = () => {
                         <div className='h-[600px] scrollbar scrollbar-thumb-[#7E3AF2] scrollbar-sky-300  overflow-y-scroll'>
                             {isLoading ? (
                                 renderCard()
-                            ) : Headlines.length === 0 ? (
-                                <div className="py-10 text-center text-gray-500">No headlines found.</div>
-                            ) : (
+                            ) : Headlines.length > 0 ?  (
                                 Headlines.map((item, idx) => (
                                     <div key={idx} className=' max-w-full h-[120px] p-5 mt-8 rounded-[8px] flex justify-between bg-[#FFFFFF] shadow-inner shadow-gray-200'>
                                         <div className='w-[454px]  h-[80px] grid grid-cols-[20%_auto] items-center gap-6'>
@@ -280,7 +279,9 @@ const Topheadlines = () => {
                                         </div>
                                     </div>
                                 ))
-                            )}
+                            ):(
+                                <div className="py-10 text-center text-gray-500">No headlines found.</div>
+                            ) }
                         </div>
                     </div>
                     <div className='max-w-full  '>
