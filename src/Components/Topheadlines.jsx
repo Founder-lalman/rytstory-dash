@@ -48,6 +48,13 @@ const Topheadlines = () => {
                         }
                     });
                 }
+                // else {
+                //     filterConditions.push({
+                //         "match_phrase": {
+                //             "location.keyword": "usa"
+                //         }
+                //     })
+                // }
                 if (filters.Words.length > 0) {
                     filterConditions.push({
                         terms: {
@@ -66,8 +73,8 @@ const Topheadlines = () => {
                     filterConditions.push({
                         "range": {
                             "dateCrawled": {
-                                "gte": "now-10d/d",
-                                "lte": "now"
+                                "gte": "now-7d/d",
+                                "lte": "now/d"
                             }
                         }
                     });
@@ -97,7 +104,7 @@ const Topheadlines = () => {
                                         "order": {
                                             "0-orderAgg": order
                                         },
-                                        "size": 3000
+                                        "size": 100
                                     },
                                     "aggs": {
                                         "1": {
@@ -106,7 +113,7 @@ const Topheadlines = () => {
                                                 "order": {
                                                     "_key": "asc"
                                                 },
-                                                "size": 3000
+                                                "size": 100
                                             },
                                             "aggs": {
                                                 "2": {
@@ -115,16 +122,16 @@ const Topheadlines = () => {
                                                         "order": {
                                                             "_key": "asc"
                                                         },
-                                                        "size": 3000
+                                                        "size": 100
                                                     },
                                                     "aggs": {
                                                         "3": {
                                                             "terms": {
-                                                                "field": "author_name.keyword",
+                                                                "field": "url_publishername.keyword",
                                                                 "order": {
                                                                     "_key": "asc"
                                                                 },
-                                                                "size": 3000
+                                                                "size": 100
                                                             },
                                                             "aggs": {
                                                                 "4": {
@@ -132,10 +139,10 @@ const Topheadlines = () => {
                                                                         "field": "dateCrawled",
                                                                         "calendar_interval": "1h",
                                                                         "time_zone": "Asia/Calcutta",
-                                                                        "extended_bounds": {
-                                                                            "min": 1756228620882,
-                                                                            "max": 1756232220882
-                                                                        }
+                                                                        // "extended_bounds": {
+                                                                        //     "min": 1756228620882,
+                                                                        //     "max": 1756232220882
+                                                                        // }
                                                                     },
                                                                     "aggs": {
                                                                         "5": {

@@ -38,9 +38,12 @@ const Dashbord = () => {
   }
   return (
     <>
+    <div className='w-full px-4 mx-auto'>
       <Navbar />
       <Filter />
       <Topheadlines />
+    </div>
+      
     </>
   )
 }

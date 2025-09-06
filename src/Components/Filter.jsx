@@ -18,9 +18,10 @@ const customStyles = {
         ':hover': { color: '#7E3AF2' },
     }),
 };
-
 const dateOptions = [
+     { value: { gte: "now-15m", lte: "now" }, label: 'Last 15 min' },
     { value: { gte: "now-30m", lte: "now" }, label: 'Last 30 min' },
+    { value: { gte: "now-60m", lte: "now" }, label: 'Last 1 hours' },
     { value: { gte: "now-1d/d", lte: "now" }, label: 'Last 1 days' },
     { value: { gte: "now-7d/d", lte: "now/d" }, label: 'Last 7 days' },
     { value: { gte: "now-10d/d", lte: "now/d" }, label: 'Last 10 days' }
