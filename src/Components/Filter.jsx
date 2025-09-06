@@ -24,7 +24,7 @@ const dateOptions = [
     { value: { gte: "now-60m", lte: "now" }, label: 'Last 1 hours' },
     { value: { gte: "now-1d/d", lte: "now" }, label: 'Last 1 days' },
     { value: { gte: "now-7d/d", lte: "now/d" }, label: 'Last 7 days' },
-    { value: { gte: "now-10d/d", lte: "now/d" }, label: 'Last 10 days' }
+    { value: { gte: "now-30d/d", lte: "now/d" }, label: 'Last 1 Months' }
 ]
 
 const Filter = () => {

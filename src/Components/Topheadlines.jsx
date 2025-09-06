@@ -73,7 +73,7 @@ const Topheadlines = () => {
                     filterConditions.push({
                         "range": {
                             "dateCrawled": {
-                                "gte": "now-7d/d",
+                                "gte": "now-1d/d",
                                 "lte": "now/d"
                             }
                         }
@@ -113,7 +113,7 @@ const Topheadlines = () => {
                                                 "order": {
                                                     "_key": "asc"
                                                 },
-                                                "size": 100
+                                                "size": 1
                                             },
                                             "aggs": {
                                                 "2": {
@@ -122,7 +122,7 @@ const Topheadlines = () => {
                                                         "order": {
                                                             "_key": "asc"
                                                         },
-                                                        "size": 100
+                                                        "size": 1
                                                     },
                                                     "aggs": {
                                                         "3": {
@@ -131,7 +131,7 @@ const Topheadlines = () => {
                                                                 "order": {
                                                                     "_key": "asc"
                                                                 },
-                                                                "size": 100
+                                                                "size": 1
                                                             },
                                                             "aggs": {
                                                                 "4": {

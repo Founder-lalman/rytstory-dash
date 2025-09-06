@@ -49,6 +49,16 @@ const Worddata = () => {
                         }
                     });
                 }
+                else {
+                    filtereddata.push({
+                        "range": {
+                            "dateCrawled": {
+                                "gte": "now-7d/d",
+                                "lte": "now"
+                            }
+                        }
+                    });
+                }
                 if (filters.search.length > 3) {
                     filtereddata.push({
                         "multi_match": {
