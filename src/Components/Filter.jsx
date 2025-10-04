@@ -87,6 +87,18 @@ const Filter = () => {
     setInputValue('');
   };
 
+  const customSelectStyles = {
+    ...customStyles, // your existing customStyles
+    control: (provided, state) => ({
+      ...provided,
+      boxShadow: state.isFocused ? '0 1px 2px rgba(0, 0, 0, 0.05)' : '0 1px 2px rgba(0, 0, 0, 0.05)', // Tailwind shadow-sm equivalent
+      borderColor: state.isFocused ? '#7E3AF2' : provided.borderColor,
+      '&:hover': {
+        borderColor: '#7E3AF2',
+      },
+    }),
+  };
+
   return (
     <div className="max-w-full mx-auto">
       {/* Reset Button */}
@@ -101,7 +113,7 @@ const Filter = () => {
         )}
       </div>
 
-      <div className="max-w-full mx-auto flex flex-col-2 px-25 gap-10 justify-between items-center">
+      <div className="max-w-full mx-auto flex flex-col-2 px-25 gap-10 justify-between items-center ">
         <div className="flex gap-5">
           <Select
             closeMenuOnSelect={false}
@@ -111,8 +123,9 @@ const Filter = () => {
             isMulti
             options={publisherOptions}
             placeholder="Publisher"
-            styles={customStyles}
+            styles={customSelectStyles}
             className="min-w-50"
+            shadow-sm
           />
           <Select
             closeMenuOnSelect={false}
@@ -122,7 +135,7 @@ const Filter = () => {
             isMulti
             options={categoryOptions}
             placeholder="Categories"
-            styles={customStyles}
+            styles={customSelectStyles}
             className="min-w-50"
           />
           <Select
@@ -133,7 +146,7 @@ const Filter = () => {
             isMulti
             options={formatOptions}
             placeholder="Format"
-            styles={customStyles}
+            styles={customSelectStyles}
             className="min-w-50"
           />
           <Select
@@ -144,12 +157,12 @@ const Filter = () => {
             isMulti
             options={countryOptions}
             placeholder="Country"
-            styles={customStyles}
+            styles={customSelectStyles}
             className="min-w-50"
           />
         </div>
 
-        <div className="relative flex gap-2 items-center">
+        <div className="relative flex gap-2 shadow-sm items-center">
           <FaCalendarAlt className="absolute left-3 text-[#7E3AF2] text-xl" />
           <Select
             value={filters.Date.length > 0 ? filters.Date[0] : null}
@@ -163,16 +176,26 @@ const Filter = () => {
         </div>
       </div>
 
-      <div className="px-25 mt-5 relative">
-        <MdOutlineSearch className="absolute left-26 top-[6px] text-[#7E3AF2] text-3xl" />
-        <input
-          type="search"
-          placeholder="Search"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="border border-gray-400 rounded px-4 pl-10 py-2 w-full outline-none"
-        />
+      <div className="px-25 mt-5">
+        <div className="relative w-full flex items-center shadow-sm  overflow-hidden border border-gray-200">
+          {/* Search Icon */}
+          <MdOutlineSearch className="ml-4 text-[#7E3AF2] text-2xl" />
+
+          {/* Input Field */}
+          <input
+            type="search"
+            placeholder="Search for headlines..."
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="flex-1 px-4 py-3 text-md outline-none rounded-l-full"
+          />
+
+          {/* Search Button */}
+          <button onClick={commitSearch} className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 font-semibold  transition duration-200">
+            Search
+          </button>
+        </div>
       </div>
     </div>
   );
