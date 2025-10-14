@@ -271,7 +271,6 @@ const Filter = () => {
                 control: (base, state) => ({
                   ...base,
                   minHeight: '36px',
-                  height: '36px',
                   borderColor: state.isFocused ? '#7E3AF2' : base.borderColor,
                   boxShadow: 'none',
                   '&:hover': { borderColor: '#7E3AF2' },
