@@ -97,36 +97,47 @@ const Filter = () => {
 
   const fetchData = async () => {
     try {
+      // Build optional date filter for aggregations so options reflect selected date range
+      const aggsBody = {
+        size: 0,
+        aggs: {
+          categories: { terms: { field: 'category.keyword', size: 1000 } },
+          publishers: {
+            terms: {
+              field: 'url_publishername.keyword',
+              size: 1000,
+            },
+          },
+          formats: {
+            terms: {
+              field: 'mainEntityOfPage.keyword',
+              size: 1000,
+            },
+          },
+          countries: {
+            terms: { field: 'location.keyword', size: 1000 },
+          },
+          languages: {
+            terms: { field: 'language.keyword', size: 1000 },
+          },
+        },
+      };
+
+      if (filters.Date && filters.Date.length > 0) {
+        aggsBody.query = {
+          bool: {
+            filter: [{ range: { dateCrawled: filters.Date[0].value } }],
+          },
+        };
+      }
+
       const res = await fetch('https://www.rytstory.com/api/data/discover-feed', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Basic bmltYTppbWFnZQ==',
         },
-        body: JSON.stringify({
-          size: 0,
-          aggs: {
-            categories: { terms: { field: 'category.keyword', size: 1000 } },
-            publishers: {
-              terms: {
-                field: 'url_publishername.keyword',
-                size: 1000,
-              },
-            },
-            formats: {
-              terms: {
-                field: 'mainEntityOfPage.keyword',
-                size: 1000,
-              },
-            },
-            countries: {
-              terms: { field: 'location.keyword', size: 1000 },
-            },
-            languages: {
-              terms: { field: 'language.keyword', size: 1000 },
-            },
-          },
-        }),
+        body: JSON.stringify(aggsBody),
       });
       const data = await res.json();
       if (data.aggregations) {
@@ -167,13 +178,10 @@ const Filter = () => {
   };
 
   useEffect(() => {
+    // Re-fetch aggregation options when the selected date changes so
+    // publisher/category/format/country/language option lists reflect the date scope.
     fetchData();
-    // ✅ Set default "Last 1 Day" filter on mount
-    setFilters((prev) => ({
-      ...prev,
-      Date: [dateOptions[1]], // "Last 1 day"
-    }));
-  }, []);
+  }, [filters.Date]);
 
   const resetAll = () => {
     setFilters({
@@ -183,7 +191,7 @@ const Filter = () => {
       formats: [],
       countries: [],
       languages: [],
-      Date: [],
+      Date: [{ value: { gte: 'now-1d/d', lte: 'now' }, label: 'Last 1 day' }],
       search: '',
     });
     setInputValue('');

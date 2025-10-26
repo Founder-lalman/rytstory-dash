@@ -32,8 +32,9 @@ const Worddata = () => {
           });
         }
         if (filters.Date.length > 0) {
+          // Use the first selected date option's value (object with gte/lte)
           filterQuery.push({
-            range: { dateCrawled: filters.Date.map((d) => d.value) },
+            range: { dateCrawled: filters.Date[0].value },
           });
         } else {
           filterQuery.push({

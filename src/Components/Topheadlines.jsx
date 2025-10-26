@@ -63,9 +63,11 @@ const Topheadlines = () => {
           });
         }
         if (filters.Date.length > 0) {
+          // filters.Date is an array of selected option objects; each option has a `value` object
+          // Elasticsearch range expects an object with gte/lte, not an array — use the first selected
           filterConditions.push({
             range: {
-              dateCrawled: filters.Date.map((da) => da.value),
+              dateCrawled: filters.Date[0].value,
             },
           });
         } else {
